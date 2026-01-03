@@ -1,0 +1,12 @@
+{
+  "name": "online-course-enrollment-root",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix Online-Course-Enrollment-API run dev",
+    "migrate:dev": "npm --prefix Online-Course-Enrollment-API run migrate:dev",
+    "migrate:status": "npm --prefix Online-Course-Enrollment-API run migrate:status",
+    "migrate:deploy": "npm --prefix Online-Course-Enrollment-API run migrate:deploy",
+    "migrate:reset": "npm --prefix Online-Course-Enrollment-API run migrate:reset",
+    "prisma:generate": "npm --prefix Online-Course-Enrollment-API run prisma:generate"
+  }
+}

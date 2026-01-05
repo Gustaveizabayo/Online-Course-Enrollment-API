@@ -7,13 +7,12 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-// Use string instead of enum for SQLite
 model User {
   id         String       @id @default(uuid())
   name       String
   email      String       @unique
   password   String?
-  role       String       // Changed from Role enum
+  role       String       @default("STUDENT")
   googleId   String?      @unique
   courses    Course[]     @relation("CourseInstructor")
   enrollments Enrollment[]

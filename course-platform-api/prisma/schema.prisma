@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// Use string instead of enum for SQLite
+model User {
+  id         String       @id @default(uuid())
+  name       String
+  email      String       @unique
+  password   String?
+  role       String       // Changed from Role enum
+  googleId   String?      @unique
+  courses    Course[]     @relation("CourseInstructor")
+  enrollments Enrollment[]
+  payments   Payment[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@map("users")
+}
+
+model Course {
+  id           String       @id @default(uuid())
+  title        String
+  description  String?
+  price        Float        @default(0.0)
+  instructorId String
+  instructor   User         @relation("CourseInstructor", fields: [instructorId], references: [id])
+  enrollments  Enrollment[]
+  payments     Payment[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@map("courses")
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  user      User     @relation(fields: [userId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+  enrolledAt DateTime @default(now())
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  userId        String
+  courseId      String
+  amount        Float
+  provider      String   @default("paypal")
+  status        String   @default("pending")
+  transactionId String   @unique
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+  course        Course   @relation(fields: [courseId], references: [id])
+
+  @@map("payments")
+}

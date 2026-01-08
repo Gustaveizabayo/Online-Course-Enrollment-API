@@ -1,5 +1,26 @@
-node_modules
-# Keep environment variables out of version control
+# Environment files
 .env
+.env.*
+*.backup
 
-/generated/prisma
+# OS / Windows
+nul
+
+# Logs
+*.log
+
+# Database
+*.db
+
+# Build output
+dist/
+
+# Node
+node_modules/
+
+# Tests & scripts
+scripts/
+test-*
+quick-test.js
+fix-*.js
+reset-*.js

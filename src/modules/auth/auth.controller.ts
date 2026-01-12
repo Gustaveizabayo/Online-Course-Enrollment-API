@@ -8,6 +8,7 @@ const registerSchema = z.object({
   email: z.string().email('Invalid email format'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   name: z.string().optional(),
+  role: z.enum(['STUDENT', 'INSTRUCTOR']).optional(),
 });
 
 const verifyOtpSchema = z.object({
@@ -32,7 +33,8 @@ export class AuthController {
       const result = await authService.register(
         validatedData.email,
         validatedData.password,
-        validatedData.name
+        validatedData.name,
+        validatedData.role as any // Type cast for now, service will handle validation
       );
 
       const response: ApiResponse = {
@@ -130,6 +132,30 @@ export class AuthController {
       const response: ApiResponse = {
         success: true,
         message: `Application ${status.toLowerCase()} successfully`,
+        data: result,
+      };
+
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateUserRole(req: Request, res: Response, next: NextFunction) {
+    try {
+      const adminUserId = (req as any).user.id;
+      const { id } = req.params; // The user ID to update
+      const { role } = req.body; // The new role
+
+      if (!role || !['STUDENT', 'INSTRUCTOR', 'ADMIN'].includes(role)) {
+        throw new BadRequestError('Invalid role provided');
+      }
+
+      const result = await authService.updateUserRole(adminUserId, id, role as any);
+
+      const response: ApiResponse = {
+        success: true,
+        message: 'User role updated successfully',
         data: result,
       };
 

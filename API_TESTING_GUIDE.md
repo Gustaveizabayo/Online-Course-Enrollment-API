@@ -461,7 +461,40 @@ Content-Type: application/json
 
 ---
 
-## Complete Testing Scenario
+### 10. Dashboard
+
+#### Get Role-Based Dashboard
+```bash
+GET http://localhost:3000/api/dashboard
+Authorization: Bearer <any_token>
+
+# Returns different data based on user role:
+# - STUDENT: Enrollments, progress, upcoming lessons
+# - INSTRUCTOR: Total students, earnings, course performance
+# - ADMIN: System stats, revenue, user counts
+```
+
+### 11. Admin Management
+
+#### Initial Admin User
+A seed admin user has been created:
+- Email: `admin@platform.com`
+- Password: `Admin123!`
+
+#### Assign Roles (Admin Only)
+Endpoint to promote users to Admin or other roles.
+
+```bash
+PATCH http://localhost:3000/api/auth/users/:id/role
+Authorization: Bearer <admin_token>
+Content-Type: application/json
+
+{
+  "role": "ADMIN"  # or INSTRUCTOR, STUDENT
+}
+```
+
+### 12. Testing Scenarios
 
 ### Scenario: Student Enrolls and Completes Course
 

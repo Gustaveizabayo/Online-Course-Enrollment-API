@@ -15,7 +15,7 @@ import { UserPayload } from '../../types';
 const prisma = new PrismaClient();
 
 export class AuthService {
-  async register(email: string, password: string, name?: string) {
+  async register(email: string, password: string, name?: string, requestedRole?: Role) {
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -30,13 +30,17 @@ export class AuthService {
         data: {
           password,
           name,
+          role: requestedRole || existingUser.role, // Update role if provided
           status: UserStatus.PENDING,
         },
       });
     } else {
-      // Check if this is the first user
-      const userCount = await prisma.user.count();
-      const role = userCount === 0 ? Role.ADMIN : Role.STUDENT;
+      // Default role is STUDENT unless explicitly requested (and allowed by controller)
+      let role: Role = Role.STUDENT;
+
+      if (requestedRole) {
+        role = requestedRole;
+      }
 
       await prisma.user.create({
         data: {
@@ -219,6 +223,26 @@ export class AuthService {
     }
 
     return updatedApplication;
+  }
+
+  async updateUserRole(adminUserId: string, targetUserId: string, newRole: Role) {
+    // 1. Check if the requester is actually an Admin (double check, though middleware should handle this)
+    const admin = await prisma.user.findUnique({
+      where: { id: adminUserId },
+    });
+
+    if (!admin || admin.role !== Role.ADMIN) {
+      throw new UnauthorizedError('Only admins can assign roles');
+    }
+
+    // 2. Update the target user's role
+    const updatedUser = await prisma.user.update({
+      where: { id: targetUserId },
+      data: { role: newRole },
+      select: { id: true, email: true, role: true, name: true }
+    });
+
+    return updatedUser;
   }
 }
 

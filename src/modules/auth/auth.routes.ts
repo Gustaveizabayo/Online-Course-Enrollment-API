@@ -259,4 +259,36 @@ router.get('/admin/applications', authenticate, authorize('ADMIN'), authControll
  */
 router.patch('/admin/applications/:id/review', authenticate, authorize('ADMIN'), authController.reviewApplication);
 
+/**
+ * @swagger
+ * /api/auth/users/{id}/role:
+ *   patch:
+ *     tags: [Auth]
+ *     summary: Update user role (Admin only)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - role
+ *             properties:
+ *               role:
+ *                 type: string
+ *                 enum: [STUDENT, INSTRUCTOR, ADMIN]
+ *     responses:
+ *       200:
+ *         description: User role updated
+ */
+router.patch('/users/:id/role', authenticate, authorize('ADMIN'), authController.updateUserRole);
+
 export default router;
